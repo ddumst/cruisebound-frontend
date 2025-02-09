@@ -157,7 +157,7 @@ export default function TripsPage() {
         </div>
       </aside>
 
-      <div className="flex-1 2xl:ml-64">
+      <div className="flex-1">
         <header className="flex items-center justify-between p-4 bg-white shadow lg:hidden">
           <h1 className="text-xl font-bold">Trips</h1>
           <button
