@@ -1,29 +1,22 @@
 import React from 'react';
 import classNames from 'classnames';
 
-interface IconProps {
+interface IconProps extends React.HTMLAttributes<HTMLSpanElement> {
   component: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  [key: string]: any;
+  displayName?: string;
 }
 
 const Icon: React.FC<IconProps> = ({ component: IconComponent, ...props }) => {
-  const {
-    className,
-    tabIndex,
-    onClick,
-    displayName,
+  const { className, tabIndex, onClick, displayName, ...restProps } = props;
 
-    ...restProps
-  } = props;
-
-  const prefixCls = 'apgicon';
+  const prefixCls = 'cruisebound-icon';
 
   const classString = classNames(
     prefixCls,
     {
-      [`${prefixCls}-${displayName}`]: !!displayName
+      [`${prefixCls}-${displayName}`]: !!displayName,
     },
-    className,
+    className
   );
 
   let iconTabIndex = tabIndex;
@@ -42,7 +35,7 @@ const Icon: React.FC<IconProps> = ({ component: IconComponent, ...props }) => {
     >
       <IconComponent />
     </span>
-  )
+  );
 };
 
 export default Icon;
