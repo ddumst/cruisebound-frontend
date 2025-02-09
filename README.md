@@ -5,9 +5,9 @@
 
 This is a repository for Cruisebound Frontend test.
 
-```js
-npm start
-```
+## Demo 👇
+
+https://cruisebound-frontend.vercel.app/
 
 ## Getting Started
 
