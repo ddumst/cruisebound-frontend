@@ -8,7 +8,7 @@ type CardProps = {
 const Card = ({ children, className }: CardProps) => {
   return (
     <div className={cn(
-        "bg-white rounded-lg shadow-md",
+        "flex flex-col sm:flex-row bg-white rounded-lg shadow-lg shadow-black/20 w-full items-center overflow-hidden",
         className
     )}>
       {children}

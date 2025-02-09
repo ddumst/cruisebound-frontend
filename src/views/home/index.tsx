@@ -18,12 +18,10 @@ import SortDropdown from "@/components/SortDropdown";
 enum SortTypes {
   PriceLowToHigh = "price-low-to-high",
   PriceHighToLow = "price-high-to-low",
-  RatingLowToHigh = "rating-low-to-high",
-  RatingHighToLow = "rating-high-to-low",
+  DepartureDateCloseToNow = "departure-date-close-to-now",
+  DepartureDateFarToNow = "departure-date-far-to-now",
   DurationLowToHigh = "duration-low-to-high",
   DurationHighToLow = "duration-high-to-low",
-  NameAZ = "name-az",
-  NameZA = "name-za",
 }
 
 export default function TripsPage() {
@@ -61,14 +59,24 @@ export default function TripsPage() {
 
   const sortedItems = [...filteredItems].sort((a, b) => {
     switch (filters.sortType) {
-      case SortTypes.PriceLowToHigh:
+      case "price-low-to-high":
         return a.price - b.price;
-      case SortTypes.PriceHighToLow:
+  
+      case "price-high-to-low":
         return b.price - a.price;
-      case SortTypes.RatingHighToLow:
-        return b.ship.rating - a.ship.rating;
-      case SortTypes.NameAZ:
-        return a.name.localeCompare(b.name);
+  
+      case "departure-date-close-to-now":
+        return new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime();
+  
+      case "departure-date-far-to-now":
+        return new Date(b.departureDate).getTime() - new Date(a.departureDate).getTime();
+  
+      case "duration-low-to-high":
+        return a.duration - b.duration;
+  
+      case "duration-high-to-low":
+        return b.duration - a.duration;
+  
       default:
         return 0;
     }
@@ -96,6 +104,7 @@ export default function TripsPage() {
           <Button
             onClick={() => setIsCollapsed(!isCollapsed)}
             variant="only-icon"
+            className="hidden lg:flex"
           >
             <FiArrowLeft className={cn(isCollapsed ? "rotate-180" : "")} />
           </Button>
@@ -148,7 +157,7 @@ export default function TripsPage() {
         </div>
       </aside>
 
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1 2xl:ml-64">
         <header className="flex items-center justify-between p-4 bg-white shadow lg:hidden">
           <h1 className="text-xl font-bold">Trips</h1>
           <button
@@ -160,7 +169,7 @@ export default function TripsPage() {
         </header>
 
         <main className="p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
           {isLoading ? (
             <>
               <Skeleton variant="rectangular" height="24px" width="240px" />
@@ -168,7 +177,7 @@ export default function TripsPage() {
             </>
           ) : (
             <>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 justify-start w-full">
                 <h2 className="text-lg font-semibold">{filteredItems.length} trips found</h2>
                 <Button 
                   className="border border-gray-400 text-black rounded-lg text-xs py-1.5"
@@ -178,10 +187,13 @@ export default function TripsPage() {
                 </Button>
               </div>
 
-              <SortDropdown
-                sortType={filters.sortType}
-                onSortChange={(newSort) => setFilters({ ...filters, sortType: newSort as SortTypes })}
-              />
+              <div className="flex w-full gap-2 items-center justify-end">
+                <span className="block">Sort by</span>
+                <SortDropdown
+                  sortType={filters.sortType}
+                  onSortChange={(newSort) => setFilters({ ...filters, sortType: newSort as SortTypes })}
+                />
+              </div>
             </>
           )}
           </div>
@@ -198,18 +210,28 @@ export default function TripsPage() {
               <>
                 {paginatedItems.length > 0 ? (
                   paginatedItems.map((sailing, index) => (
-                    <Card key={index} className="flex w-full items-center overflow-hidden">
-                      <div className="flex relative w-64 h-full">
+                    <Card key={index}>
+                      <div className="flex relative w-full sm:w-64 h-full">
                         <Image
                           src={sailing.ship.image || "/assets/placeholder.png"}
                           alt={sailing.name}
-                          className="rounded-tl-lg h-full w-64 object-cover"
+                          className="rounded-tl-lg h-full w-full sm:w-64 object-cover"
                           width={500}
                           height={500}
                         />
 
                         <div className="absolute rounded-lg bg-black bg-opacity-80 py-1 px-2 top-2 left-2 text-white text-xs">
                           {formatDateRange(sailing.departureDate, sailing.returnDate)}
+                        </div>
+
+                        <div className="block sm:hidden absolute rounded-lg bg-black bg-opacity-80 py-1 px-2 top-2 right-2 text-white text-xs">
+                          <div className="rating flex items-center gap-1">
+                            <IoMdStar className="text-yellow-500" />
+                            <span>{sailing.ship.rating}</span>
+                            <div className="text-gray-400 text-xs">
+                              {sailing.ship.reviews} reviews
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-col bg-white w-full h-full">
@@ -221,7 +243,7 @@ export default function TripsPage() {
                             <div className="flex gap-4 text-gray-800 font-medium">
                               <span>{sailing.region}</span>
                               <span>{sailing.duration} nights</span>
-                              <div className="rating flex items-center gap-1">
+                              <div className="rating hidden sm:flex items-center gap-1">
                                 <IoMdStar className="text-yellow-500" />
                                 <span>{sailing.ship.rating}</span>
                                 <div className="text-gray-400 text-xs">
@@ -229,7 +251,6 @@ export default function TripsPage() {
                                 </div>
                               </div>
                             </div>
-                            <Itinerary itinerary={sailing.itinerary} maxVisible={4} />
                           </div>
                           <div className="flex flex-col items-end">
                             {sailing.ship.line.logo ? (
@@ -243,6 +264,9 @@ export default function TripsPage() {
                             ) : null}
                             <p className="text-gray-400 text-xs">{sailing.ship.line.name}</p>
                           </div>
+                        </div>
+                        <div className="flex w-full p-4 pt-0">
+                          <Itinerary itinerary={sailing.itinerary} maxVisible={4} />
                         </div>
                         <div className="flex gap-4 justify-end bg-[#f5f5f5] p-4 h-20 items-center">
                           <div className="flex flex-col items-end text-gray-900">
