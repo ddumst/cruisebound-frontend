@@ -1,4 +1,4 @@
-# Arquitectura de servidores - Actividad 1
+# Frontend Engineer - Cruisebound technical assessment
 ### Hey there, I'm Diego Becerra or **dDumst** 👋
 
 ![https://github.com/ddumst](https://user-images.githubusercontent.com/1307894/212375663-b2b2b89b-0530-4320-a254-928f1878ba86.png)
